@@ -15,7 +15,7 @@
 					  unsigned long start = micros()
 
 #define END_PROFILE start = micros() - start; \
-					  Serial.printf("%fms - %s \n", (float)start / 1000.0f, __PRETTY_FUNCTION__)
+					  Serial.printf("%s, %f \n", __PRETTY_FUNCTION__, (float)start / 1000.0f)
 
 // ============================================================================
 // Global variables
@@ -26,16 +26,17 @@ extern Adafruit_TFTLCD gTftScreen;
 // ============================================================================
 // Private func decl
 // ============================================================================
+void TestFillScreen();
 void TestFilledRoundRects();
 void TestRoundRects();
 void TestFilledTriangles();
 void TestTriangles();
-void TestCircles(uint8_t radius, uint16_t color);
-void TestFilledCircles(uint8_t radius, uint16_t color);
-void TestFilledRects(uint16_t color1, uint16_t color2);
-void TestRects(uint16_t color);
-void TestFastLines(uint16_t color1, uint16_t color2);
-void TestLines(uint16_t color);
+void TestCircles();
+void TestFilledCircles();
+void TestFilledRects();
+void TestRects();
+void TestFastLines();
+void TestLines();
 void TestText();
 
 // ============================================================================
@@ -50,12 +51,12 @@ void RunScreenTest()
 	TestRoundRects();
 	TestFilledTriangles();
 	TestTriangles();
-	TestCircles(10, SC_RED);
-	TestFilledCircles(10, SC_WHITE);
-	TestFilledRects(SC_MAGENTA, SC_WHITE);
-	TestRects(SC_GREEN);
-	TestFastLines(SC_RED, SC_BLUE);
-	TestLines(SC_CYAN);
+	TestCircles();
+	TestFilledCircles();
+	TestFilledRects();
+	TestRects();
+	TestFastLines();
+	TestLines();
 	TestText();
 }
 
@@ -105,7 +106,7 @@ void TestText()
 	END_PROFILE;
 }
 
-void TestLines(uint16_t color) 
+void TestLines() 
 {
 	int w = gTftScreen.width();
 	int h = gTftScreen.height();
@@ -118,13 +119,13 @@ void TestLines(uint16_t color)
 	y2  = h - 1;
 	for(x2=0; x2<w; x2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	x2 = w - 1;
 	for(y2=0; y2<h; y2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	x1 = w - 1;
@@ -132,13 +133,13 @@ void TestLines(uint16_t color)
 	y2 = h - 1;
 	for(x2=0; x2<w; x2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	x2 = 0;
 	for(y2=0; y2<h; y2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	x1 = 0;
@@ -146,12 +147,12 @@ void TestLines(uint16_t color)
 	y2 = 0;
 	for(x2=0; x2<w; x2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 	x2 = w - 1;
 	for(y2=0; y2<h; y2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	x1 = w - 1;
@@ -159,29 +160,29 @@ void TestLines(uint16_t color)
 	y2 = 0;
 	for(x2=0; x2<w; x2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 	x2 = 0;
 	for(y2=0; y2<h; y2+=6)
 	{
-		gTftScreen.drawLine(x1, y1, x2, y2, color);
+		gTftScreen.drawLine(x1, y1, x2, y2, SC_CYAN);
 	}
 
 	END_PROFILE;
 }
 
-void TestFastLines(uint16_t color1, uint16_t color2)
+void TestFastLines()
 {
 	int x, y, w = gTftScreen.width(), h = gTftScreen.height();
 	BEGIN_PROFILE;
 
-	for(y=0; y<h; y+=5) gTftScreen.drawFastHLine(0, y, w, color1);
-	for(x=0; x<w; x+=5) gTftScreen.drawFastVLine(x, 0, h, color2);
+	for(y=0; y<h; y+=5) gTftScreen.drawFastHLine(0, y, w, SC_RED);
+	for(x=0; x<w; x+=5) gTftScreen.drawFastVLine(x, 0, h, SC_GREEN);
 
 	END_PROFILE;
 }
 
-void TestRects(uint16_t color)
+void TestRects()
 {
   int           n, i, i2,
 				cx = gTftScreen.width()  / 2,
@@ -191,36 +192,38 @@ void TestRects(uint16_t color)
   n = min(gTftScreen.width(), gTftScreen.height());
   for(i=2; i<n; i+=6) {
 	i2 = i / 2;
-	gTftScreen.drawRect(cx-i2, cy-i2, i, i, color);
+	gTftScreen.drawRect(cx-i2, cy-i2, i, i, SC_WHITE);
   }
 
   END_PROFILE;
 }
 
-void TestFilledRects(uint16_t color1, uint16_t color2)
+void TestFilledRects()
 {
-  int           n, i, i2,
-				cx = gTftScreen.width()  / 2 - 1,
-				cy = gTftScreen.height() / 2 - 1;
+	int           n, i, i2,
+					cx = gTftScreen.width()  / 2 - 1,
+					cy = gTftScreen.height() / 2 - 1;
 
-  BEGIN_PROFILE;
+	BEGIN_PROFILE;
 
-  n = min(gTftScreen.width(), gTftScreen.height());
-  for(i=n; i>0; i-=6)
-  {
-		i2 = i / 2;
+	n = min(gTftScreen.width(), gTftScreen.height());
+	for(i=n; i>0; i-=6)
+	{
+			i2 = i / 2;
 
-		gTftScreen.fillRect(cx-i2, cy-i2, i, i, color1);
+			gTftScreen.fillRect(cx-i2, cy-i2, i, i, SC_MAGENTA);
 
-		// Outlines are not included in timing results
-		gTftScreen.drawRect(cx-i2, cy-i2, i, i, color2);
-  }
+			// Outlines are not included in timing results
+			gTftScreen.drawRect(cx-i2, cy-i2, i, i, SC_WHITE);
+	}
 
-  END_PROFILE;
+	END_PROFILE;
 }
 
-void TestFilledCircles(uint8_t radius, uint16_t color)
+void TestFilledCircles()
 {
+	uint8_t radius = 10;
+	uint16_t color = SC_GREEN;
 	int x, y, w = gTftScreen.width(), h = gTftScreen.height(), r2 = radius * 2;
 
 	BEGIN_PROFILE;
@@ -236,8 +239,10 @@ void TestFilledCircles(uint8_t radius, uint16_t color)
 	END_PROFILE;
 }
 
-void TestCircles(uint8_t radius, uint16_t color) 
+void TestCircles() 
 {
+	uint8_t radius = 10;
+	uint16_t color = SC_RED;
 	int           x, y, r2 = radius * 2,
 					w = gTftScreen.width()  + radius,
 					h = gTftScreen.height() + radius;
