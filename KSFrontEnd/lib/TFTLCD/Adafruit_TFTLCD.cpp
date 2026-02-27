@@ -1158,11 +1158,8 @@ void Adafruit_TFTLCD::writeRegister24(uint8_t r, uint32_t d) {
   CD_COMMAND;
   write8(r);
   CD_DATA;
-  delayMicroseconds(10);
   write8(d >> 16);
-  delayMicroseconds(10);
   write8(d >> 8);
-  delayMicroseconds(10);
   write8(d);
   CS_IDLE;
 }
@@ -1172,13 +1169,9 @@ void Adafruit_TFTLCD::writeRegister32(uint8_t r, uint32_t d) {
   CD_COMMAND;
   write8(r);
   CD_DATA;
-  delayMicroseconds(10);
   write8(d >> 24);
-  delayMicroseconds(10);
   write8(d >> 16);
-  delayMicroseconds(10);
   write8(d >> 8);
-  delayMicroseconds(10);
   write8(d);
   CS_IDLE;
 }
