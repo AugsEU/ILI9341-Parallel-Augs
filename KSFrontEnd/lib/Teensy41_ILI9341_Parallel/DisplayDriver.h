@@ -35,6 +35,7 @@ public:
     int Begin();
 
 	int TestWritePixel(uint16_t x, uint16_t y, uint16_t col);
+	int TestClear(uint16_t col);
 
 private:
 

@@ -43,6 +43,9 @@ void SetupScreenDisplay(void)
 	Serial.printf("error: %d", err);
 
 	delay(100);
+	//gDriver.TestWritePixel(10, 10, SC_MAGENTA);
+	gDriver.TestClear(SC_BLACK);
+	//gDriver.TestClear(SC_BLUE);
 	for(int x = 0; x < gDevice.WIDTH; x++)
 	{
 		for(int y = 0; y < gDevice.HEIGHT; y++)
@@ -51,9 +54,8 @@ void SetupScreenDisplay(void)
 			delay(10);
 		}
 	}
-	gDriver.TestWritePixel(10, 10, SC_MAGENTA);
-	gDriver.TestWritePixel(11, 10, SC_MAGENTA);
-	gDriver.TestWritePixel(12, 10, SC_MAGENTA);
+	//gDriver.TestWritePixel(11, 10, SC_MAGENTA);
+	//gDriver.TestWritePixel(12, 10, SC_MAGENTA);
 	//gDriver.TestWritePixel(10, 11, 0x0000);
 
 	//uint16_t identifier = gTftScreen.readID();

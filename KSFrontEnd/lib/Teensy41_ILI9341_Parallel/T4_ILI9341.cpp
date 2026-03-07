@@ -200,20 +200,20 @@ void T4_ILI9341::DisplayOn()
 
 void T4_ILI9341::ColumnAddrSet(uint16_t startCol, uint16_t endCol)
 {
-	uint8_t sc15_8 = startCol >> 8;
-	uint8_t sc7_0 = startCol & 0xFF;
-	uint8_t ec15_8 = endCol >> 8;
-	uint8_t ec7_0 = endCol & 0xFF;
+	uint16_t sc15_8 = startCol >> 8;
+	uint16_t sc7_0 = startCol & 0xFF;
+	uint16_t ec15_8 = endCol >> 8;
+	uint16_t ec7_0 = endCol & 0xFF;
 	Cmd8Data4(ILI9341_CMD_COL_ADDR_SET, sc15_8, sc7_0, ec15_8, ec7_0);
 }
 
 
 void T4_ILI9341::PageAddrSet(uint16_t startPage, uint16_t endPage)
 {
-	uint8_t sp15_8 = startPage >> 8;
-	uint8_t sp7_0 = startPage & 0xFF;
-	uint8_t ep15_8 = endPage >> 8;
-	uint8_t ep7_0 = endPage & 0xFF;
+	uint16_t sp15_8 = startPage >> 8;
+	uint16_t sp7_0 = startPage & 0xFF;
+	uint16_t ep15_8 = endPage >> 8;
+	uint16_t ep7_0 = endPage & 0xFF;
 	Cmd8Data4(ILI9341_CMD_PAGE_ADDR_SET, sp15_8, sp7_0, ep15_8, ep7_0);
 }
 
