@@ -12,9 +12,33 @@
 // ============================================================================
 // Errors
 // ============================================================================
-#define ILI9341_OK 0
-#define ILI9341_INVALID_ID 0x80010000 // Got sent back an ID that wasn't 9341
 
+#define ILI9341_OK                      0x00000000 // All is good..
+#define ILI9341_INVALID_ID              0x80010000 // Got sent back an ID that wasn't 9341
+#define ILI9341_NOT_INITIALISED         0x80010001 // Didn't run initialisation sequence
+
+#define ILI9341_CHECK_ERR_ABORT(err) if(err != ILI9341_OK) return err
+
+// ============================================================================
+// Macros
+// ============================================================================
+#if defined(ARDUINO_TEENSY41)
+	// Write to data bus assuming the port is available to write.
+	#define ILI9341_WRITE_DATA_BUS(d) PORTD = (d)
+	#define ILI9341_READ_DATA_BUS() ((uint8_t)PIND)
+
+	#define ILI9341_START_READ() DDRD = 0b00000000
+	#define ILI9341_END_READ() DDRD = 0b11111111
+
+	#define ILI9341_WRITE_PIN_FAST(d, v) digitalWrite(d, v)
+	#define ILI9341_STROBE_PIN(d) do {                             \
+										digitalWrite(d, LOW);  \
+										digitalWrite(d, HIGH); \
+									} while(false)
+
+#else
+	#error Platform not supported. Please implement above macros.
+#endif
 
 // ============================================================================
 // Commands
