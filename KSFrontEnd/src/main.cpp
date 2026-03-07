@@ -15,7 +15,7 @@
 // ============================================================================
 // Constants
 // ============================================================================
-#define SHOW_KEYBOARD_DATA 0
+#define SHOW_KEYBOARD_DATA 1
 
 
 
@@ -58,7 +58,7 @@ void setup()
 	gUsbKeyboard.attachRawPress(OnRawPress);
 	gUsbKeyboard.attachRawRelease(OnRawRelease);
 	gUsbKeyboard.forceHIDProtocol();
-
+	
 	// Screen
 	SetupScreenDisplay();
 }
