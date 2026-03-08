@@ -4,9 +4,17 @@
 #include "Screen/ScreenDisplay.h"
 #include "Screen/ScreenTest.h"
 
+#if USE_ADAFRUIT_LIBRARY
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFTLCD.h> // Hardware-specific library
-#include <DisplayDriver.h>
+#else // USE_ADAFRUIT_LIBRARY
+#include <DeferDriver.h>
+#include <ILI9341_Constants.h>
+#endif // USE_ADAFRUIT_LIBRARY
+
+
+
+
 
 // ============================================================================
 // Constants
@@ -24,10 +32,12 @@
 // ============================================================================
 // Global variables
 // ============================================================================
-//Adafruit_TFTLCD gTftScreen(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+#if USE_ADAFRUIT_LIBRARY
+Adafruit_TFTLCD gTftScreen(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+#else // USE_ADAFRUIT_LIBRARY
 ILI9341::T4_ILI9341 gDevice(LCD_CS, LCD_CD, LCD_WR, LCD_RD);
-ILI9341::DisplayDriver gDriver(gDevice);
-
+ILI9341::DeferDriver gDriver(gDevice);
+#endif // USE_ADAFRUIT_LIBRARY
 
 
 
@@ -36,32 +46,19 @@ ILI9341::DisplayDriver gDriver(gDevice);
 // ============================================================================
 void SetupScreenDisplay(void) 
 {
-	//gTftScreen.reset();
-
-	while(!Serial);
+#if USE_ADAFRUIT_LIBRARY
+ 	gTftScreen.reset();
+	gTftScreen.begin(0x9341);
+#else // USE_ADAFRUIT_LIBRARY
 	int err = gDriver.Begin();
-	Serial.printf("error: %d", err);
-
-	delay(100);
-	//gDriver.TestWritePixel(10, 10, SC_MAGENTA);
-	gDriver.TestClear(SC_BLACK);
-	//gDriver.TestClear(SC_BLUE);
-	for(int x = 0; x < gDevice.WIDTH; x++)
+	if(err != ILI9341_OK)
 	{
-		for(int y = 0; y < gDevice.HEIGHT; y++)
-		{
-			gDriver.TestWritePixel(x, y, ((x+y)/2) % 5 == 0 ? SC_GREEN : SC_BLACK);
-		}
+		Serial.printf("Display error. %x", (uint32_t)err);
 	}
-	//gDriver.TestWritePixel(11, 10, SC_MAGENTA);
-	//gDriver.TestWritePixel(12, 10, SC_MAGENTA);
-	//gDriver.TestWritePixel(10, 11, 0x0000);
-
-	//uint16_t identifier = gTftScreen.readID();
-	//gTftScreen.begin(identifier);
+#endif // USE_ADAFRUIT_LIBRARY
 
 #if SCREEN_TEST_ENABLE
-	//RunScreenTest();
+	RunScreenTest();
 #endif // SCREEN_TEST_ENABLE
 }
 

@@ -21,7 +21,7 @@ constexpr uint16_t SC_MAGENTA = 0xF81F;
 constexpr uint16_t SC_YELLOW  = 0xFFE0;
 constexpr uint16_t SC_WHITE   = 0xFFFF;
 
-
+#define USE_ADAFRUIT_LIBRARY 0
 
 
 

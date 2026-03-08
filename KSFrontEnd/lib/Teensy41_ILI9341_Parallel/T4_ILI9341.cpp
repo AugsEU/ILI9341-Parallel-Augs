@@ -3,6 +3,7 @@
 // ============================================================================
 #include "T4_ILI9341.h"
 #include "ILI9341_Constants.h"
+#include "ILI9341Macros.h"
 
 #include "Arduino.h"
 

@@ -350,6 +350,8 @@ struct GammaColorCorrection2
 	uint8_t mBlueCurve[NUM_ENTRIES];
 };
 
+typedef uint16_t ILIColor;
+
 }
 
 #endif // ILI9341_TYPES_H
