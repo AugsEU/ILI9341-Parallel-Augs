@@ -60,25 +60,21 @@ int DisplayDriver::Begin()
 int DisplayDriver::TestWritePixel(uint16_t x, uint16_t y, uint16_t col)
 {
 	mDevice.ColumnAddrSet(x, mDevice.WIDTH - 1);
-	delay(10);
 	mDevice.PageAddrSet(y, mDevice.HEIGHT - 1);
-	delay(10);
 	mDevice.MemoryWrite(&col, 1);
-	delay(10);
 
 	return ILI9341_OK; 
 }
 
 int DisplayDriver::TestClear(uint16_t col)
 {
-	mDevice.ColumnAddrSet(0, mDevice.HEIGHT - 1);
-	delay(10);
-	mDevice.PageAddrSet(0, mDevice.WIDTH - 1);
-	delay(10);
+	mDevice.ColumnAddrSet(0, mDevice.WIDTH - 1);
+	mDevice.PageAddrSet(0, mDevice.HEIGHT - 1);
+
 	uint16_t buff[mDevice.HEIGHT * mDevice.WIDTH];
 	memset(buff, col, sizeof(buff));
 	mDevice.MemoryWrite(buff, mDevice.HEIGHT * mDevice.WIDTH);
-	delay(10);
+
 
 	return ILI9341_OK;
 }

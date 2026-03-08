@@ -58,7 +58,7 @@ public:
 
 	void ColorSet(ColorLUT table);
 
-	uint8_t* MemoryRead(uint32_t size); // you take ownership of this pointer
+	uint16_t* MemoryRead(uint32_t size); // you take ownership of this pointer
 
 	void PartialArea(uint16_t startRow, uint16_t endRow);
 
@@ -107,6 +107,7 @@ public:
 
 	// Level 2 commands
 	void RgbInterfaceSignalCtrl(RgbBypassMode bypass, 
+								RgbInterfaceRCM rcm,
 								SyncPolarity vspl, 
 								SyncPolarity hspl, 
 								TransitionPolarity dotclk, 
@@ -180,6 +181,10 @@ private:
 	void Cmd8Data2(uint8_t cmd, uint8_t d0, uint8_t d1);
 	void Cmd8Data3(uint8_t cmd, uint8_t d0, uint8_t d1, uint8_t d2);
 	void Cmd8Data4(uint8_t cmd, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+	void Cmd8Data5(uint8_t cmd, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+				uint8_t d4);
+	void Cmd8Data6(uint8_t cmd, uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
+					uint8_t d4, uint8_t d5);
 	void Cmd8DataN(uint8_t cmd, uint8_t* d, uint32_t n);
 	
 	void BeginReadMode(uint8_t cmd);

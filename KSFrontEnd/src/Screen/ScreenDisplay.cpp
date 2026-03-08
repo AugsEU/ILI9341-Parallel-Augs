@@ -50,8 +50,7 @@ void SetupScreenDisplay(void)
 	{
 		for(int y = 0; y < gDevice.HEIGHT; y++)
 		{
-			gDriver.TestWritePixel(x, y, SC_MAGENTA);
-			delay(10);
+			gDriver.TestWritePixel(x, y, ((x+y)/2) % 5 == 0 ? SC_GREEN : SC_BLACK);
 		}
 	}
 	//gDriver.TestWritePixel(11, 10, SC_MAGENTA);

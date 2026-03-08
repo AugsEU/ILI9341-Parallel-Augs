@@ -5,6 +5,7 @@
 // Include
 // ============================================================================
 #include <stdint.h>
+#include <stdlib.h>
 
 #ifndef ILI9341_TYPES_H
 #define ILI9341_TYPES_H
@@ -50,10 +51,10 @@ enum TearingEffectMode : bool
 
 enum AdaptiveBrightnessCtrl : uint8_t
 {
-	Off,
-	UserInterfaceImage,
-	StillPicture,
-	MovingImage
+	Off = 0b00,
+	UserInterfaceImage = 0b01,
+	StillPicture = 0b10,
+	MovingImage = 0b11
 };
 
 enum RgbBypassMode : bool
@@ -74,36 +75,36 @@ enum TransitionPolarity : bool
 	FallingEdge
 };
 
-enum ScanMode : bool
+enum ScanMode : uint8_t
 {
-	NormalScan,
-	IntervalScan
+	NormalScan = 0b00,
+	IntervalScan = 0b10
 };
 
 enum SourceOutput : uint8_t
 {
-	V64_V0,
-	V0_V63,
-	AGND,
-	HiZ
+	V64_V0 = 0b00,
+	V0_V63 = 0b01,
+	AGND   = 0b10,
+	HiZ    = 0b11
 };
 
-enum ShiftDirectionOfSourceDriver : bool
+enum ShiftDirectionOfSourceDriver : uint8_t
 {
-	S1_S720,
-	S720_S1
+	S1_S720 = 0b0,
+	S720_S1 = 0b1
 };
 
-enum LiquidCrystalType : bool
+enum LiquidCrystalType : uint8_t
 {
-	NormallyBlack,
-	NormallyWhite
+	NormallyBlack = 0b0,
+	NormallyWhite = 0b1
 };
 
-enum GateOutputScanDiraction : bool
+enum GateOutputScanDiraction : uint8_t
 {
-	G1_G320,
-	G320_G1
+	G1_G320 = 0b0,
+	G320_G1 = 0b1
 };
 
 enum GateOuputLevel : uint8_t
@@ -116,24 +117,24 @@ enum GateOuputLevel : uint8_t
 
 enum PGMAddr : uint8_t
 {
-	Id1Programming,
-	Id2Programming,
-	Id3Programming,
-	VmfProgramming
+	Id1Programming = 0b000,
+	Id2Programming = 0b001,
+	Id3Programming = 0b010,
+	VmfProgramming = 0b100
 };
 
 enum class Endianess : uint8_t
 {
-	BigEndian,
-	LittleEndian
+	BigEndian = 0,
+	LittleEndian = 1
 };
 
 enum class DisplayOperationMode : uint8_t
 {
-	InternalClockOperation,
-	RgbInterface,
-	VsyncInterface,
-	SettingDiabled
+	InternalClockOperation = 0b00,
+	RgbInterface = 0b01,
+	VsyncInterface = 0b10,
+	SettingDiabled = 0b11
 };
 
 enum class GramInterfaceMode : uint8_t
@@ -164,6 +165,12 @@ enum class PumpRatio : uint8_t
 	VCIx3 = 0b11
 };
 
+enum class RgbInterfaceRCM : uint8_t
+{
+	DeMode = 0b10,
+	SyncMode = 0b11
+};
+
 // Special return types
 struct DisplayIdentification
 {
@@ -179,26 +186,26 @@ struct DisplayStatus
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline bool BoosterVolatageEnabled() const { return READ_BOOL(31); }
-	inline RowOrder RowAddrOrder() const { return READ_BOOL(30) ? BottomToTop : TopToBottom; }
-	inline ColOrder ColAddrOrder() const { return READ_BOOL(29) ? RightToLeft : LeftToRight; }
-	inline RowColExchange RowColExchange() const { return READ_BOOL(28) ? Reverse : Normal; }
-	inline RowOrder VerticalRefresh() const { return READ_BOOL(27) ? BottomToTop : TopToBottom; }
-	inline RgbOrder RgbOrder() const { return READ_BOOL(26) ? BGR : RGB; }
-	inline ColOrder HorizontalRefresh() const { return READ_BOOL(25) ? RightToLeft : LeftToRight; }
-	inline PixelFormat PixelFormat() const { return READ_BOOL(21) ? Form18Bit : Form16Bit; }
-	inline bool IdleMode() const { return READ_BOOL(29); }
-	inline bool SleepOut() const { return READ_BOOL(17); }
-	inline bool DisplayInNormalMode() const { return READ_BOOL(16); }
-	inline bool DisplayOn() const { return READ_BOOL(10); }
-	inline bool TearingEffectOn() const { return READ_BOOL(9); }
-	inline uint8_t GammaCurveIndex() const
+	inline bool GetBoosterVolatageEnabled() const { return READ_BOOL(31); }
+	inline RowOrder GetRowAddrOrder() const { return READ_BOOL(30) ? BottomToTop : TopToBottom; }
+	inline ColOrder GetColAddrOrder() const { return READ_BOOL(29) ? RightToLeft : LeftToRight; }
+	inline RowColExchange GetRowColExchange() const { return READ_BOOL(28) ? Reverse : Normal; }
+	inline RowOrder GetVerticalRefresh() const { return READ_BOOL(27) ? BottomToTop : TopToBottom; }
+	inline RgbOrder GetRgbOrder() const { return READ_BOOL(26) ? BGR : RGB; }
+	inline ColOrder GetHorizontalRefresh() const { return READ_BOOL(25) ? RightToLeft : LeftToRight; }
+	inline PixelFormat GetPixelFormat() const { return READ_BOOL(21) ? Form18Bit : Form16Bit; }
+	inline bool GetIdleMode() const { return READ_BOOL(29); }
+	inline bool GetSleepOut() const { return READ_BOOL(17); }
+	inline bool GetDisplayInNormalMode() const { return READ_BOOL(16); }
+	inline bool GetDisplayOn() const { return READ_BOOL(10); }
+	inline bool GetTearingEffectOn() const { return READ_BOOL(9); }
+	inline uint8_t GetGammaCurveIndex() const
 	{
 		uint32_t gammaBits = mPackedBits & (0xE0);
 		gammaBits >>= 5;
 		return (uint8_t)gammaBits;
 	}
-	inline TearingEffectMode TearingEffectMode() const { return READ_BOOL(5) ? VBlankHBlank : VBlankOnly; }
+	inline TearingEffectMode GetTearingEffectMode() const { return READ_BOOL(5) ? VBlankHBlank : VBlankOnly; }
 
 	#undef READ_BOOL
 };
@@ -210,12 +217,12 @@ struct DisplayPowerMode
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline bool BoosterEnabled() const { return READ_BOOL(7); }
-	inline bool IdleMode() const { return READ_BOOL(6); }
-	inline bool PartialMode() const { return READ_BOOL(5); }
-	inline bool SleepOut() const { return READ_BOOL(4); }
-	inline bool DisplayInNormalMode() const { return READ_BOOL(3); }
-	inline bool DisplayOn() const { return READ_BOOL(2); }
+	inline bool GetBoosterEnabled() const { return READ_BOOL(7); }
+	inline bool GetIdleMode() const { return READ_BOOL(6); }
+	inline bool GetPartialMode() const { return READ_BOOL(5); }
+	inline bool GetSleepOut() const { return READ_BOOL(4); }
+	inline bool GetDisplayInNormalMode() const { return READ_BOOL(3); }
+	inline bool GetDisplayOn() const { return READ_BOOL(2); }
 
 	#undef READ_BOOl
 };
@@ -227,12 +234,12 @@ struct DisplayMADCTL
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline RowOrder RowAddrOrder() const { return READ_BOOL(7) ? BottomToTop : TopToBottom; }
-	inline ColOrder ColAddrOrder() const { return READ_BOOL(6) ? RightToLeft : LeftToRight; }
-	inline RowColExchange RowColExchange() const { return READ_BOOL(5) ? Reverse : Normal; }
-	inline RowOrder VerticalRefresh() const { return READ_BOOL(4) ? BottomToTop : TopToBottom; }
-	inline RgbOrder RgbOrder() const { return READ_BOOL(3) ? BGR : RGB; }
-	inline ColOrder HorizontalRefresh() const { return READ_BOOL(2) ? RightToLeft : LeftToRight; }
+	inline RowOrder GetRowAddrOrder() const { return READ_BOOL(7) ? BottomToTop : TopToBottom; }
+	inline ColOrder GetColAddrOrder() const { return READ_BOOL(6) ? RightToLeft : LeftToRight; }
+	inline RowColExchange GetRowColExchange() const { return READ_BOOL(5) ? Reverse : Normal; }
+	inline RowOrder GetVerticalRefresh() const { return READ_BOOL(4) ? BottomToTop : TopToBottom; }
+	inline RgbOrder GetRgbOrder() const { return READ_BOOL(3) ? BGR : RGB; }
+	inline ColOrder GetHorizontalRefresh() const { return READ_BOOL(2) ? RightToLeft : LeftToRight; }
 
 	#undef READ_BOOl
 };
@@ -244,12 +251,12 @@ struct DisplaySignalMode
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline bool TearingEffectOn() const { return READ_BOOL(7); }
-	inline TearingEffectMode TearingEffectMode() const { return READ_BOOL(6) ? VBlankHBlank : VBlankOnly; }
-	inline bool HorizontalSyncOn() const { return READ_BOOL(5); }
-	inline bool VerticalSyncOn() const { return READ_BOOL(4); }
-	inline bool PixelClockOn() const { return READ_BOOL(3); }
-	inline bool DataEnable() const { return READ_BOOL(2); }
+	inline bool GetTearingEffectOn() const { return READ_BOOL(7); }
+	inline TearingEffectMode GetTearingEffectMode() const { return READ_BOOL(6) ? VBlankHBlank : VBlankOnly; }
+	inline bool GetHorizontalSyncOn() const { return READ_BOOL(5); }
+	inline bool GetVerticalSyncOn() const { return READ_BOOL(4); }
+	inline bool GetPixelClockOn() const { return READ_BOOL(3); }
+	inline bool GetDataEnable() const { return READ_BOOL(2); }
 
 	#undef READ_BOOl
 };
@@ -261,8 +268,8 @@ struct DisplaySelfDiagnostic
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline bool RegisterLoadingDetection() const { return READ_BOOL(7); }
-	inline bool FunctionalityDetection() const { return READ_BOOL(7); }
+	inline bool GetRegisterLoadingDetection() const { return READ_BOOL(7); }
+	inline bool GetFunctionalityDetection() const { return READ_BOOL(7); }
 
 	#undef READ_BOOl
 };
@@ -274,9 +281,9 @@ struct CtrlDisplay
 
 	#define READ_BOOL(x) ((mPackedBits & (1u << x)) != 0)
 
-	inline bool BrightnessControlBlock() const { return READ_BOOL(5); }
-	inline bool DisplayDimming() const { return READ_BOOL(3); }
-	inline bool BacklightOnOff() const { return READ_BOOL(2); }
+	inline bool GetBrightnessControlBlock() const { return READ_BOOL(5); }
+	inline bool GetDisplayDimming() const { return READ_BOOL(3); }
+	inline bool GetBacklightOnOff() const { return READ_BOOL(2); }
 
 	#undef READ_BOOl
 };
@@ -319,8 +326,7 @@ struct GammaCorrection
 	uint8_t mVp57;
 	uint8_t mVp50;
 	uint8_t mVp43;
-	uint8_t mVp27;
-	uint8_t mVp36;
+	uint8_t mVp27_36;
 	uint8_t mVp20;
 	uint8_t mVp13;
 	uint8_t mVp6;
@@ -332,14 +338,16 @@ struct GammaCorrection
 
 struct GammaColorCorrection1
 {
-	uint8_t mRedCurve[16];
-	uint8_t mBlueCurve[16];
+	static constexpr size_t NUM_ENTRIES = 16;
+	uint8_t mRedCurve[NUM_ENTRIES];
+	uint8_t mBlueCurve[NUM_ENTRIES];
 };
 
 struct GammaColorCorrection2
 {
-	uint8_t mRedCurve[64];
-	uint8_t mBlueCurve[64];
+	static constexpr size_t NUM_ENTRIES = 64;
+	uint8_t mRedCurve[NUM_ENTRIES];
+	uint8_t mBlueCurve[NUM_ENTRIES];
 };
 
 }
