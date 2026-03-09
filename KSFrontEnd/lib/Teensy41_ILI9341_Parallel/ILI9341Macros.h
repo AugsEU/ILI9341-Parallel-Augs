@@ -17,10 +17,10 @@
 	#define ILI9341_START_READ() DDRD = 0b00000000
 	#define ILI9341_END_READ() DDRD = 0b11111111
 
-	#define ILI9341_WRITE_PIN_FAST(d, v) digitalWrite(d, v)
+	#define ILI9341_WRITE_PIN_FAST(d, v) digitalWriteFast(d, v)
 	#define ILI9341_STROBE_PIN(d) do {                             \
-										digitalWrite(d, LOW);  \
-										digitalWrite(d, HIGH); \
+										digitalWriteFast(d, LOW);  \
+										digitalWriteFast(d, HIGH); \
 									} while(false)
 
 #else
