@@ -81,12 +81,12 @@ void SynthInit(void)
 	SetFloatParam(ASP_ENV_ATTACK1, 0.002);
 	SetFloatParam(ASP_ENV_DECAY1, 0.000005f);
 	SetFloatParam(ASP_ENV_SUSTAIN1, 0.76f);
-	SetFloatParam(ASP_ENV_RELEASE1, 0.0005f);
+	SetFloatParam(ASP_ENV_RELEASE1, 0.000005f);
 
 	SetFloatParam(ASP_ENV_ATTACK2, 0.00002);
 	SetFloatParam(ASP_ENV_DECAY2, 0.00005f);
 	SetFloatParam(ASP_ENV_SUSTAIN2, 0.96f);
-	SetFloatParam(ASP_ENV_RELEASE2, 0.005f);
+	SetFloatParam(ASP_ENV_RELEASE2, 0.00005f);
 
 	SetFloatParam(ASP_LFO_RATE, 4.0f * SAMPLE_PERIOD);
 	SetFloatParam(ASP_LFO_OSC1_VOLUME, 0.25f);
