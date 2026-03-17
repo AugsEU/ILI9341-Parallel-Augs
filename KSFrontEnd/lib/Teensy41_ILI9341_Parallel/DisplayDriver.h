@@ -26,6 +26,14 @@ public:
         Online // Device successfully setup and ready to use.
     };
 
+	enum class CircleSection
+	{
+		TopLeft,
+		TopRight,
+		BottomLeft,
+		BottomRight
+	};
+
 
 
 	/// @brief Create new display driver
@@ -94,6 +102,17 @@ public:
 
 
 
+	/// @brief Draw a quarter circle
+	/// @tparam Section Circle quadrant to draw
+	/// @param x center x-coordinate
+	/// @param y center y-coordinate
+	/// @param r radius
+	/// @param color outline color
+	template<CircleSection Section>
+	void DrawCircleQuadrant(uint16_t x, uint16_t y, uint16_t r, ILIColor color);
+
+
+
 	/// @brief Fill circle
 	/// @param x center x-coordinate
 	/// @param y center y-coordinate
@@ -103,6 +122,18 @@ public:
 
 
 
+	/// @brief Draw rectangle outline with rounded corners
+	/// @param x top-left x-coordinate 
+	/// @param y top-right x-coordinate
+	/// @param w width
+	/// @param h height
+	/// @param radius corner radius
+	/// @param color outline color
+	void DrawRoundedRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                     		int16_t radius, uint16_t color);
+
+
+							
 	/// @brief Set text cursor to absolute position.
 	/// @param x cursor x-coordinate
 	/// @param y cursor y-coordinate
@@ -156,6 +187,73 @@ protected:
 	ILIColor mFontColor;
 	const uint8_t* mFontData;
 };
+
+// ============================================================================
+// Inline functions
+// ============================================================================
+template<DisplayDriver::CircleSection Section>
+void DisplayDriver::DrawCircleQuadrant(uint16_t x, uint16_t y, uint16_t r, ILIColor color)
+{
+    // Cardinal points for this quadrant
+    if constexpr (Section == CircleSection::TopLeft || Section == CircleSection::TopRight)
+        DrawPixel(x, y - r, color);
+    if constexpr (Section == CircleSection::BottomLeft || Section == CircleSection::BottomRight)
+        DrawPixel(x, y + r, color);
+    if constexpr (Section == CircleSection::TopRight || Section == CircleSection::BottomRight)
+        DrawPixel(x + r, y, color);
+    if constexpr (Section == CircleSection::TopLeft || Section == CircleSection::BottomLeft)
+        DrawPixel(x - r, y, color);
+
+    int32_t dx = 0;
+    int32_t dy = r;
+    int32_t s  = r * r;
+    int32_t r2 = s;
+
+    while (dx < dy)
+    {
+        dx++;
+        dy--;
+        s += 2 * (dx - dy) + 2;
+        if (s < r2)
+        {
+            s += 2 * dy + 1;
+            dy++;
+        }
+
+        // +dx, +dy  → bottom right
+        if constexpr (Section == CircleSection::BottomRight)
+            DrawPixel(x + dx, y + dy, color);
+
+        // -dx, +dy  → bottom left
+        if constexpr (Section == CircleSection::BottomLeft)
+            DrawPixel(x - dx, y + dy, color);
+
+        // +dx, -dy  → top right
+        if constexpr (Section == CircleSection::TopRight)
+            DrawPixel(x + dx, y - dy, color);
+
+        // -dx, -dy  → top left
+        if constexpr (Section == CircleSection::TopLeft)
+            DrawPixel(x - dx, y - dy, color);
+
+        // +dy, +dx  → bottom right
+        if constexpr (Section == CircleSection::BottomRight)
+            DrawPixel(x + dy, y + dx, color);
+
+        // -dy, +dx  → bottom left
+        if constexpr (Section == CircleSection::BottomLeft)
+            DrawPixel(x - dy, y + dx, color);
+
+        // +dy, -dx  → top right
+        if constexpr (Section == CircleSection::TopRight)
+            DrawPixel(x + dy, y - dx, color);
+
+        // -dy, -dx  → top left
+        if constexpr (Section == CircleSection::TopLeft)
+            DrawPixel(x - dy, y - dx, color);
+    }
+}
+
 
 }
 

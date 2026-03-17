@@ -33,6 +33,8 @@ DisplayDriver::DisplayDriver(T4_ILI9341 device) :
 
 
 
+
+
 int DisplayDriver::Begin()
 {
 	int err = EstablishConnection();
@@ -69,6 +71,10 @@ int DisplayDriver::Begin()
 	return ILI9341_OK;
 }
 
+
+
+
+
 void DisplayDriver::ForceClear(ILIColor col)
 {
 	mDevice.ColumnAddrSet(0, mDevice.WIDTH - 1);
@@ -78,6 +84,9 @@ void DisplayDriver::ForceClear(ILIColor col)
 	memset(buff, col, sizeof(buff));
 	mDevice.MemoryWrite(buff, mDevice.HEIGHT * mDevice.WIDTH);
 }
+
+
+
 
 
 void DisplayDriver::DrawLine(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, ILIColor col)
@@ -128,6 +137,10 @@ void DisplayDriver::DrawLine(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey,
     }
 }
 
+
+
+
+
 void DisplayDriver::DrawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILIColor col)
 {
 	FillRect(x, y, w, 1, col);
@@ -135,6 +148,26 @@ void DisplayDriver::DrawRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILI
 	FillRect(x, y+h, w, 1, col);
 	FillRect(x+w, y, 1, h+1, col);
 }
+
+
+
+
+
+void DisplayDriver::FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILIColor col)
+{
+	// Default impl, very bad perf. Should be overriden in all drivers
+	for(uint16_t px = x; px < x + w; ++px)
+	{
+		for(uint16_t py = y; py < y + h; ++py)
+		{
+			DrawPixel(px, py, col);
+		}
+	}
+}
+
+
+
+
 
 void DisplayDriver::DrawCircle(uint16_t x, uint16_t y, uint16_t r, ILIColor color)
 {
@@ -172,17 +205,104 @@ void DisplayDriver::DrawCircle(uint16_t x, uint16_t y, uint16_t r, ILIColor colo
     }
 }
 
-void DisplayDriver::FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILIColor col)
+
+
+
+
+void DisplayDriver::FillCircle(uint16_t x, uint16_t y, uint16_t r, uint16_t color)
 {
-	// Default impl, very bad perf. Should be overriden in all drivers
-	for(uint16_t px = x; px < x + w; ++px)
-	{
-		for(uint16_t py = y; py < y + h; ++py)
-		{
-			DrawPixel(px, py, col);
-		}
-	}
+    // Centre column always drawn alone
+    FillRect(x, y - r, 1, 2 * r + 1, color);
+
+    int32_t dx = 0;
+    int32_t dy = r;
+    int32_t s  = r * r;
+    int32_t r2 = r * r;
+
+    int32_t colFlushStart = 1;
+    int32_t last   = r;
+
+    auto FlushColumns = [&](int32_t end_dx)
+    {
+        if (end_dx < colFlushStart) return;  // nothing to flush
+        int32_t width = end_dx - colFlushStart + 1;
+        FillRect(x + colFlushStart, y - last, width, 2 * last + 1, color);
+        FillRect(x - end_dx,    y - last, width, 2 * last + 1, color);
+    };
+
+    while (dx < dy)
+    {
+        dx++;
+        dy--;
+        s += 2 * (dx - dy) + 2;
+
+        if (s < r2)
+        {
+            s += 2 * dy + 1;
+            dy++;
+        }
+
+        if (dy != last)
+        {
+            FlushColumns(dx - 1);
+            colFlushStart = dx;
+            last   = dy;
+        }
+    }
+
+    FlushColumns(dx);
+
+    dy = 0;
+    dx = r;
+    s = r2;
+
+    while (dy < dx)
+    {
+        dy++;
+        dx--;
+        s += 2 * (dy - dx) + 2;
+
+        if (s < r2)
+        {
+            s += 2 * dx + 1;
+            dx++;
+        }
+
+        FillRect(x + dx, y - dy, 1, 2 * dy + 1, color);
+        FillRect(x - dx, y - dy, 1, 2 * dy + 1, color);
+    }
 }
+
+
+
+
+
+void DisplayDriver::DrawRoundedRect(int16_t x, int16_t y, int16_t w, int16_t h,
+                     		        int16_t radius, uint16_t color)
+{
+    if(w <= radius*2 || h <= radius*2)
+    {
+        // Invalid rectangle
+        return;
+    }
+
+    uint16_t xEdgeLen = w - radius*2;
+    uint16_t yEdgeLen = h - radius*2;
+    
+    // Draw straight edges
+    FillRect(x+radius, y, xEdgeLen, 1, color);
+	FillRect(x, y+radius, 1, yEdgeLen, color);
+	FillRect(x+radius, y+h, xEdgeLen, 1, color);
+	FillRect(x+w, y+radius, 1, yEdgeLen+1, color);
+
+    // Draw corners
+    DrawCircleQuadrant<CircleSection::TopLeft>(x+radius, y+radius, radius, color);
+    DrawCircleQuadrant<CircleSection::TopRight>(x+w-radius, y+radius, radius, color);
+    DrawCircleQuadrant<CircleSection::BottomLeft>(x+radius, y+h-radius, radius, color);
+    DrawCircleQuadrant<CircleSection::BottomRight>(x+w-radius, y+h-radius, radius, color);
+}
+
+
 
 
 
@@ -212,6 +332,8 @@ void DisplayDriver::DrawText(const char* string)
     mCursorY += charHeight;
     mCursorX = lineBegin;
 }
+
+
 
 
 

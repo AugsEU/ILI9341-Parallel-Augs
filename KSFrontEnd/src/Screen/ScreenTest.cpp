@@ -34,7 +34,8 @@
 #define END_PROFILE unsigned long preRender = micros() - start; \
 					gDriver.RenderAllPixels();\
 					start = micros() - start; \
-				    Serial.printf("%s, %f %f \n", __PRETTY_FUNCTION__, (float)preRender / 1000.0f, (float)start / 1000.0f)
+				    Serial.printf("%s, %f %f \n", __PRETTY_FUNCTION__, (float)preRender / 1000.0f, (float)start / 1000.0f); \
+					delay(500)
 
 #define GET_WIDTH() ILI9341::T4_ILI9341::WIDTH
 #define GET_HEIGHT() ILI9341::T4_ILI9341::HEIGHT
@@ -273,8 +274,8 @@ void TestFastLines()
 	for(y=0; y<h; y+=5) gTftScreen.drawFastHLine(0, y, w, SC_RED);
 	for(x=0; x<w; x+=5) gTftScreen.drawFastVLine(x, 0, h, SC_GREEN);
 #else // USE_ADAFRUIT_LIBRARY
-	for(y=0; y<h; y+=5) gDriver.FillRect(0, y, w, 0, SC_RED);
-	for(x=0; x<w; x+=5) gDriver.FillRect(x, 0, 0, h, SC_GREEN);
+	for(y=0; y<h; y+=5) gDriver.FillRect(0, y, w, 1, SC_RED);
+	for(x=0; x<w; x+=5) gDriver.FillRect(x, 0, 1, h, SC_GREEN);
 #endif // USE_ADAFRUIT_LIBRARY
 
 	END_PROFILE;
@@ -317,7 +318,7 @@ void TestFilledRects()
 #if USE_ADAFRUIT_LIBRARY
 		gTftScreen.fillRect(cx-i2, cy-i2, i, i, SC_MAGENTA);
 #else // USE_ADAFRUIT_LIBRARY
-		gDriver.FillRect(cx-i2, cy-i2, i, i, SC_WHITE);
+		gDriver.FillRect(cx-i2, cy-i2, i, i, SC_MAGENTA);
 #endif // USE_ADAFRUIT_LIBRARY
 
 	}
@@ -340,8 +341,7 @@ void TestFilledCircles()
 #if USE_ADAFRUIT_LIBRARY
 			gTftScreen.fillCircle(x, y, radius, color);
 #else // USE_ADAFRUIT_LIBRARY
-			// Todo...
-			(void)color;
+			gDriver.FillCircle(x, y, radius, color);
 #endif // USE_ADAFRUIT_LIBRARY
 		}
 	}
@@ -434,10 +434,7 @@ void TestRoundRects()
 #if USE_ADAFRUIT_LIBRARY
 		gTftScreen.drawRoundRect(cx-i2, cy-i2, i, i, i/8, gTftScreen.color565(i, 0, 0));
 #else // USE_ADAFRUIT_LIBRARY
-		// Todo
-		(void)cx;
-		(void)cy;
-		(void)i2;
+		gDriver.DrawRoundedRect(cx-i2, cy-i2, i, i, i/8, ((i&0b11111) << 11));
 #endif // USE_ADAFRUIT_LIBRARY
 	}
 

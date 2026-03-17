@@ -74,11 +74,6 @@ void DeferDriver::DrawPixel(uint16_t x, uint16_t y, ILIColor col)
 
 void DeferDriver::ForceClear(ILIColor col)
 {
-	constexpr size_t SIZE_OF_BUS_AS_U32 = sizeof(DrawBlock::mColorBuff) / (sizeof(uint32_t));
-	static_assert(sizeof(DrawBlock::mColorBuff) % sizeof(uint32_t) == 0);
-	
-	const uint32_t colCol = (col) | (col << 16);
-	
 	for(uint16_t bx = 0; bx < DB_GRID_WIDTH; ++bx)
 	{
 		for(uint16_t by = 0; by < DB_GRID_HEIGHT; ++by)
@@ -86,17 +81,10 @@ void DeferDriver::ForceClear(ILIColor col)
 			DrawBlock& newBlock = GetBlock(bx, by);
 			newBlock.mDirty = false;
 
-			uint32_t* colBuffasU32 = reinterpret_cast<uint32_t*>(newBlock.mColorBuff);
-			for(size_t i = 0; i < SIZE_OF_BUS_AS_U32; i+=4ull)
-			{
-				// Do in groups of 4 to encourage compiler to make this SIMD
-				colBuffasU32[i]   = colCol;
-				colBuffasU32[i+1] = colCol;
-				colBuffasU32[i+2] = colCol;
-				colBuffasU32[i+3] = colCol;
-			}
+			FillBlock(newBlock, col);
 		}
 	}
+
 	DisplayDriver::ForceClear(col);
 }
 
@@ -104,8 +92,46 @@ void DeferDriver::ForceClear(ILIColor col)
 
 void DeferDriver::FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILIColor col)
 {
-	// Todo: More optimised version of this...
-	DisplayDriver::FillRect(x, y, w, h, col);
+	if(x > T4_ILI9341::WIDTH || y > T4_ILI9341::HEIGHT)
+	{
+		// oob, skip.
+		return;
+	}
+
+	uint16_t bStartx = x / DRAW_BLOCK_SIZE;
+	uint16_t bStarty = y / DRAW_BLOCK_SIZE;
+	uint16_t bEndx = min((x+w-1) / DRAW_BLOCK_SIZE, DB_GRID_WIDTH-1);
+	uint16_t bEndy = min((y+h-1) / DRAW_BLOCK_SIZE, DB_GRID_HEIGHT-1);
+
+	mFirstDirtyBlock = GetBlockIdx(bStartx, bStarty);
+	mLastDirtyBlock = GetBlockIdx(bEndx, bEndy);
+	for(uint16_t bx = bStartx; bx <= bEndx; ++bx)
+	{
+		for(uint16_t by = bStarty; by <= bEndy; ++by)
+		{
+			//printf("%u %u---\n", bx, by);
+			int idx = GetBlockIdx(bx, by);
+			DrawBlock& block = mDBGrid[idx];
+
+			// printf("%u %u %u %u\n", bStartx, bEndx, bStarty, bEndy);
+			if(bStartx < bx && bx < bEndx &&
+			   bStarty < by && by < bEndy)
+			{
+				FillBlock(block, col);
+				block.mDirty = false;
+				continue;
+			}
+
+			uint16_t sx = max(bx * DRAW_BLOCK_SIZE, x) - bx * DRAW_BLOCK_SIZE;
+			uint16_t sy = max(by * DRAW_BLOCK_SIZE, y) - by * DRAW_BLOCK_SIZE;
+			uint16_t ex = min((bx+1) * DRAW_BLOCK_SIZE, x+w) - bx * DRAW_BLOCK_SIZE;
+			uint16_t ey = min((by+1) * DRAW_BLOCK_SIZE, y+h) - by * DRAW_BLOCK_SIZE;
+
+			//printf("    X %u-%u Y %u-%u\n", sx, ex, sy, ey);
+			PartialFillBlock(block, sx, sy, ex, ey, col);
+			block.mDirty = true;
+		}
+	}
 }
 
 void DeferDriver::RenderPixels(uint16_t numBlocks)
@@ -193,6 +219,39 @@ int DeferDriver::GetBlockIdxAtPix(uint16_t x, uint16_t y)
 	uint16_t by = y / DRAW_BLOCK_SIZE;
 
 	return GetBlockIdx(bx, by);
+}
+
+void DeferDriver::FillBlock(DrawBlock& block, ILIColor col)
+{
+	constexpr size_t SIZE_OF_BUFF_AS_U32 = 
+			sizeof(DrawBlock::mColorBuff) / (sizeof(uint32_t));
+	static_assert(sizeof(DrawBlock::mColorBuff) % sizeof(uint32_t) == 0);
+
+	const uint32_t colCol = (col) | (col << 16);
+
+	uint32_t* colBuffasU32 = reinterpret_cast<uint32_t*>(block.mColorBuff);
+	for(size_t i = 0; i < SIZE_OF_BUFF_AS_U32; i+=4ull)
+	{
+		// Do in groups of 4 to encourage compiler to make this SIMD
+		colBuffasU32[i]   = colCol;
+		colBuffasU32[i+1] = colCol;
+		colBuffasU32[i+2] = colCol;
+		colBuffasU32[i+3] = colCol;
+	}
+}
+
+/// @brief Fill a block. Important: these are coords relative to the block!!
+void DeferDriver::PartialFillBlock(DrawBlock& block, uint16_t sx, uint16_t sy, 
+										uint16_t ex, uint16_t ey, ILIColor col)
+{
+	for(uint16_t py = sy; py < ey; ++py)
+	{
+		//uint16_t yoffset = py * DB_GRID_WIDTH;
+		for(uint16_t px = sx; px < ex; ++px)
+		{
+			block.mColorBuff[px + py * DRAW_BLOCK_SIZE] = col;
+		}	
+	}
 }
 
 }

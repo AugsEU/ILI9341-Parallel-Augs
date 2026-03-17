@@ -92,6 +92,10 @@ private:
 	DrawBlock& GetBlockAtPix(uint16_t x, uint16_t y);
 	int GetBlockIdxAtPix(uint16_t x, uint16_t y);
 
+	void FillBlock(DrawBlock& block, ILIColor col);
+	void PartialFillBlock(DrawBlock& block, uint16_t sx, uint16_t sy, 
+		uint16_t ex, uint16_t ey, ILIColor col);
+
 	// Members
 
 	DrawBlock mDBGrid[DB_GRID_WIDTH * DB_GRID_HEIGHT];
