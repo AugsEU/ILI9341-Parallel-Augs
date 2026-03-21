@@ -8,9 +8,9 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFTLCD.h> // Hardware-specific library
 #else // USE_ADAFRUIT_LIBRARY
-#include <DeferDriver.h>
+#include <ILI9341_DeferDriver.h>
 #include <ILI9341_Constants.h>
-#include <T4_ILI9341.h>
+#include <ILI9341_Device.h>
 #endif // USE_ADAFRUIT_LIBRARY
 
 #if SCREEN_TEST_ENABLE
