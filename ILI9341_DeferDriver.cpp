@@ -51,6 +51,14 @@ void DeferDriver::DrawPixel(uint16_t x, uint16_t y, ILIColor col)
 
 	int blockIndex = GetBlockIdx(bx, by);
 	DrawBlock& block = mDBGrid[blockIndex];
+
+	ILIColor& blockColor = block.mColorBuff[rx + ry * DRAW_BLOCK_SIZE]; 
+	if(blockColor == col)
+	{
+		// No change, no need to dirty block
+		return;
+	}
+
 	block.mColorBuff[rx + ry * DRAW_BLOCK_SIZE] = col;
 
 	// Mark as dirty and update min/max indices
@@ -109,11 +117,9 @@ void DeferDriver::FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILICo
 	{
 		for(uint16_t by = bStarty; by <= bEndy; ++by)
 		{
-			//printf("%u %u---\n", bx, by);
 			int idx = GetBlockIdx(bx, by);
 			DrawBlock& block = mDBGrid[idx];
 
-			// printf("%u %u %u %u\n", bStartx, bEndx, bStarty, bEndy);
 			if(bStartx < bx && bx < bEndx &&
 			   bStarty < by && by < bEndy)
 			{
@@ -127,7 +133,6 @@ void DeferDriver::FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ILICo
 			uint16_t ex = min((bx+1) * DRAW_BLOCK_SIZE, x+w) - bx * DRAW_BLOCK_SIZE;
 			uint16_t ey = min((by+1) * DRAW_BLOCK_SIZE, y+h) - by * DRAW_BLOCK_SIZE;
 
-			//printf("    X %u-%u Y %u-%u\n", sx, ex, sy, ey);
 			PartialFillBlock(block, sx, sy, ex, ey, col);
 			block.mDirty = true;
 		}

@@ -6,6 +6,7 @@
 // Include
 // ============================================================================
 #include <stdint.h>
+#include <optional>
 #include <ILI9341_Device.h>
 
 #ifndef ILI9341_DISPLAY_DRIVER_H
@@ -200,7 +201,7 @@ public:
 
 	/// @brief Draw a string using previously set parameters.
 	/// @param string String to draw.
-	void DrawText(const char* string);
+	void DrawText(const char* string, std::optional<ILIColor> clearColor = std::nullopt);
 
 
 

@@ -444,7 +444,8 @@ void DisplayDriver::FillTriangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t
 
 
 
-void DisplayDriver::DrawText(const char* string)
+void DisplayDriver::DrawText(const char* string, 
+	std::optional<ILIColor> clearColor /*= std::nullopt*/)
 {
 	uint16_t lineBegin = mCursorX;
 	uint16_t charWidth = mFontSize * (FONT_CHAR_WIDTH+1);
@@ -455,8 +456,11 @@ void DisplayDriver::DrawText(const char* string)
 		char c = *currChar;
 		if(c >= 0x21 && c < 0x7F)
 		{
+			if(clearColor.has_value())
+			{
+				FillRect(mCursorX, mCursorY, charWidth, charHeight, *clearColor);
+			}
 			DrawChar(mCursorX, mCursorY, c);
-			//DrawRect(mCursorX, mCursorY, charWidth, charHeight, 0xFFFF);
 		}
 
 		mCursorX += charWidth;
