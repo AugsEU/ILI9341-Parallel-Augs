@@ -10,6 +10,8 @@
 #ifndef ILI9341_PARALLEL_H
 #define ILI9341_PARALLEL_H
 
+#define ILI9341_REVERSE_WIDTH_HEIGHT_HACK 1
+
 namespace ILI9341
 {
 
@@ -19,8 +21,13 @@ namespace ILI9341
 class Device
 {
 public:
+#if ILI9341_REVERSE_WIDTH_HEIGHT_HACK
+	constexpr static int WIDTH = 320;
+	constexpr static int HEIGHT = 240;
+#else // ILI9341_REVERSE_WIDTH_HEIGHT_HACK
 	constexpr static int WIDTH = 240;
 	constexpr static int HEIGHT = 320;
+#endif // ILI9341_REVERSE_WIDTH_HEIGHT_HACK
 
 	// Init
 	Device(uint8_t cs, uint8_t cd, uint8_t wr, uint8_t rd);
