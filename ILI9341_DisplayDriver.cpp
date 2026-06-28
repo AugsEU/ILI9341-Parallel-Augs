@@ -453,13 +453,13 @@ void DisplayDriver::DrawText(const char* string,
 
 	for(const char* currChar = string; *currChar != '\0'; ++currChar)
 	{
+		if(clearColor.has_value())
+		{
+			FillRect(mCursorX, mCursorY, charWidth, charHeight, *clearColor);
+		}
 		char c = *currChar;
 		if(c >= 0x21 && c < 0x7F)
 		{
-			if(clearColor.has_value())
-			{
-				FillRect(mCursorX, mCursorY, charWidth, charHeight, *clearColor);
-			}
 			DrawChar(mCursorX, mCursorY, c);
 		}
 
