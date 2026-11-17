@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "ILI9341_Color.h"
+
 #ifndef ILI9341_TYPES_H
 #define ILI9341_TYPES_H
 
@@ -349,8 +351,6 @@ struct GammaColorCorrection2
 	uint8_t mRedCurve[NUM_ENTRIES];
 	uint8_t mBlueCurve[NUM_ENTRIES];
 };
-
-typedef uint16_t ILIColor;
 
 }
 
