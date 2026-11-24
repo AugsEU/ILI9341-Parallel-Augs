@@ -26,7 +26,7 @@ DisplayDriver::DisplayDriver(Device device) :
 	mCursorY(0),
 	mFontSize(1),
 	mFontColor(0xFFFF),
-	mFontData(gFuturisticFont)
+	mFontData(gFuturisticFontLarge)
 {
 
 }
@@ -482,11 +482,11 @@ void DisplayDriver::DrawText(const char* string,
 void DisplayDriver::DrawChar(uint16_t x, uint16_t y, char c)
 {
 	int idx = c - 0x21;
-	const uint8_t* currCol = &mFontData[idx*FONT_CHAR_WIDTH];
+	const uint16_t* currCol = &mFontData[idx*FONT_CHAR_WIDTH];
 
 	for(uint8_t col = 0; col < FONT_CHAR_WIDTH; col++)
 	{
-		uint8_t colData = *currCol;
+		uint16_t colData = *currCol;
 
 		uint16_t yc = y;
 		for(uint8_t row = 0; row < FONT_CHAR_HEIGHT; row++)

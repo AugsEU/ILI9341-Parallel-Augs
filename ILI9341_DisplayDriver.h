@@ -195,7 +195,7 @@ public:
 	/// @brief Set pixel data for font.
 	/// @param data Pixel data where each byte is one 8-pixel column. Chars 
 	///             assumed to be 5 pixels wide. Begin data at 0x21 to 0x7F
-	inline void SetFont(const uint8_t* data) { mFontData = data; }
+	inline void SetFont(const uint16_t* data) { mFontData = data; }
 
 
 
@@ -224,7 +224,7 @@ protected:
 	uint16_t mCursorY;
 	uint16_t mFontSize;
 	ILIColor mFontColor;
-	const uint8_t* mFontData;
+	const uint16_t* mFontData;
 };
 
 // ============================================================================

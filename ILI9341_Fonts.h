@@ -15,14 +15,15 @@ namespace ILI9341
 // ============================================================================
 // Constants
 // ============================================================================
-constexpr uint16_t FONT_CHAR_WIDTH = 5;
-constexpr uint16_t FONT_CHAR_HEIGHT = 8;
+constexpr uint16_t FONT_CHAR_WIDTH = 8;
+constexpr uint16_t FONT_CHAR_HEIGHT = 16;
 
 
 // ============================================================================
 // Public globals
 // ============================================================================
 extern const uint8_t gFuturisticFont[];
+extern const uint16_t gFuturisticFontLarge[];
 
 }
 
