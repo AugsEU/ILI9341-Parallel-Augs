@@ -503,6 +503,19 @@ void DisplayDriver::DrawChar(uint16_t x, uint16_t y, char c)
 	}
 }
 
+
+
+
+
+
+void DisplayDriver::ClearTextArea(uint16_t textLen, ILIColor clearColor)
+{
+	uint16_t charWidth = mFontSize * (FONT_CHAR_WIDTH+1);
+	uint16_t charHeight = mFontSize * (FONT_CHAR_HEIGHT+1);
+	FillRect(mCursorX, mCursorY, charWidth * textLen, charHeight, clearColor);
+}
+
+
 // ============================================================================
 // Private
 // ============================================================================

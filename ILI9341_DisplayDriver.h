@@ -212,6 +212,12 @@ public:
 	/// @param c character to draw. Must be 0x21 to 0x7F
 	void DrawChar(uint16_t x, uint16_t y, char c);
 
+
+	/// @brief Clear a text area for textLen chars
+	/// @param textLen Character space to be cleared
+	/// @param clearColor Color to clear with
+	void ClearTextArea(uint16_t textLen, ILIColor clearColor);
+
 protected:
 
 	/// @brief Attempt to connect to device
